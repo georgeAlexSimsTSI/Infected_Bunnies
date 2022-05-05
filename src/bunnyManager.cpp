@@ -18,8 +18,22 @@ void BunnyManager::increment()
         }
         else
         {
-            std::cout << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
-
+            std::string colour;
+            switch ((*it)->getColour())
+            {
+            case 0:
+                colour = "White ";
+                break;
+            case 1:
+                colour = "Grey ";
+                break;
+            case 2:
+                colour = "Brown ";
+                break;
+            default:
+                colour = "Black ";
+            }
+            std::cout << colour << ((*it)->getSex() ? "Female " : "Male ") << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
             if ((*it)->getSex() && (*it)->getAge() > 1 && oldMale())
             {
                 addBunny(it->get());
@@ -27,7 +41,6 @@ void BunnyManager::increment()
             }
         }
     }
-
     int turnedVamps = 0;
     if ((bunnies.size() - Bunny::vampCount) / 2 <= Bunny::vampCount) // if over half of all bunnies are vampires then they should all die
     {
@@ -35,7 +48,7 @@ void BunnyManager::increment()
         {
             if ((*bun).isVampire())
                 continue;
-            std::cout << (*bun).getName() << " has been turned into a vampire " << std::endl;
+            std::cout << (*bun).getName() << " has turned into a vampire " << std::endl;
             ++Bunny::vampCount;
             (*bun).turnVampire();
             turnedVamps++;
@@ -43,20 +56,12 @@ void BunnyManager::increment()
         return;
     }
 
-    // Hacky soloution                      kill me
+    // Hacky soloution
     int count = Bunny::vampCount;
     for (int i = 0; (i < count) && (bunnies.size() - Bunny::vampCount - 1 > 0); ++i)
     {
         it = bunnies.begin();
-        int random;
-        try
-        {
-            random = std::rand() % (bunnies.size() - Bunny::vampCount - 1);
-        }
-        catch (...)
-        {
-            random = 0;
-        }
+        int random = std::rand() % (bunnies.size() - Bunny::vampCount - 1);
         for (int j = 0; j <= random;)
         {
             ++it;
@@ -71,11 +76,13 @@ void BunnyManager::increment()
         (*it)->turnVampire();
         turnedVamps++;
     }
-    std::cout << born << " " << turnedVamps << std::endl;
-    // convert healthy bunnies into vamps, //still broken
+    std::cout << std::endl
+              << "Born: " << born << " Turned: " << turnedVamps << std::endl;
+    std::cout << "Currently: " << bunnies.size() << " healthy rabbits " << std::endl;
+    std::cout << "Currently: " << Bunny::vampCount << " vampires " << std::endl;
 }
 
-void BunnyManager::addBunny(const Bunny *mother) // create initial bunnies
+void BunnyManager::addBunny(const Bunny *mother)
 {
     int random = std::rand() % 100;
     Gender sex = (random % 2 == 0) ? Gender::Male : Gender::Female;
@@ -107,7 +114,7 @@ void BunnyManager::addBunny(const Bunny *mother) // create initial bunnies
 
 void BunnyManager::printState()
 {
-    int healthy = bunnies.size() - Bunny::vampCount;
+    int healthy = (bunnies.size() - Bunny::vampCount > 0) ? bunnies.size() - Bunny::vampCount : 0;
     std::cout << "Healthy bunnies: " << healthy << std::endl;
     std::cout << "Vampire bunnies: " << Bunny::vampCount << std::endl;
 }
@@ -128,7 +135,7 @@ void BunnyManager::run()
             cull();
         std::cout.flush();
         sleep(2);
-        healthy = bunnies.size() - Bunny::vampCount;
+        healthy = bunnies.size() - Bunny::vampCount; // unsigned int was causing a rolling value
     } while (healthy > 0);
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
@@ -148,18 +155,12 @@ void BunnyManager::cull()
         // std::cout << (*it)->getName() << " has been culled " << std::endl;
         bunnies.erase(it);
     }
+    std::cout << bunnies.size() << std::endl;
+    std::cin;
 }
 
 bool BunnyManager::oldMale()
 {
-    if (Bunny::maleCount > 0)
-        return true;
-
-    // for(auto &it : bunnies){
-    //     if((*it).getAge() >= 2 && (*it).getSex() == 0)
-    //         return true;
-    // }
-    // return false;
-    return std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
-                       { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
+    return (Bunny::maleCount > 0) || std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
+                                                 { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
 }
