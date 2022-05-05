@@ -25,12 +25,12 @@ bool Bunny::increment()
     ++age;
     if (vampire)
     {
-        if (age > 49)
+        if (age > 50)
             return true;
         ++vampCount;
         return false;
     }
-    if (age > 9)
+    if (age > 10)
         return true;
 
     if (age >= 2)

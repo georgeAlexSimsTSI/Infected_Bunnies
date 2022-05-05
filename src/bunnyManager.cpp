@@ -18,7 +18,7 @@ void BunnyManager::increment()
         }
         else
         {
-            std::cout << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
+            // std::cout << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
         }
     }
 
@@ -32,28 +32,23 @@ void BunnyManager::increment()
     }
 
     // convert healthy bunnies into vamps
-
     // unsigned int healthyRabits = bunnies.size() - Bunny::vampCount;
     for (int i = 0; i < Bunny::vampCount; ++i)
-    { // this isn't great, redo it later
-        do
+    {
+        it = bunnies.begin();
+        int random = std::rand() % (bunnies.size() - Bunny::vampCount - i);
+        for (int j = 0; j < random;)
         {
-            it = bunnies.begin();
-            // std::advance(it,(rand() % bunnies.size()));
-            // if((*it)->isVampire())
-            //     continue;
-            // (*it)->turnVampire();
-            // break;
-            for (int j = 0; j < bunnies.size(); ++i)
+            if ((*it)->isVampire())
             {
-                if ((*it)->isVampire()){
-                    ++it;
-                    continue;
-                }
-                (*it)->turnVampire();
+                ++it;
+                continue;
             }
-
-        } while ((bunnies.size() - Bunny::vampCount - i) > 0);
+            ++j;
+            ++it;
+        }
+        std::cout << (*it)->getName() << " has been turned into a vampire " << std::endl;
+        (*it)->turnVampire();
     }
 }
 
@@ -69,6 +64,7 @@ void BunnyManager::addBunny()
     {
         random = std::rand() % vampireNames.size();
         name = vampireNames[random];
+        Bunny::vampCount++;
     }
     else
     {
@@ -86,4 +82,10 @@ void BunnyManager::addBunny()
 
     std::cout << ((vampire) ? "Radioactive Mutant Vampire Bunny " : "Bunny ") << name << " was born!" << std::endl;
     bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, vampire));
+}
+
+void BunnyManager::printState()
+{
+    std::cout << "Healthy bunnies: " << bunnies.size()-Bunny::vampCount << std::endl;
+    std::cout << "Vampire bunnies: " << Bunny::vampCount << std::endl;
 }

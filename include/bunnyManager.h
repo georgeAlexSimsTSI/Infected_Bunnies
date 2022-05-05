@@ -31,6 +31,7 @@ public:
     }
     void increment();
     void addBunny();
+    void printState();
 };
 
 #endif

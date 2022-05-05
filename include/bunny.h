@@ -34,7 +34,7 @@ public:
 
     Bunny() : Bunny(Gender::Male, Colour::Grey, std::string("Thumper"), 0, false){};
     Bunny(const Gender &sex, const Colour &colour, const std::string &name, const unsigned int &age, const bool &vampire) : sex(sex), colour(colour), name(name), age(age), vampire(vampire){};
-    ~Bunny() { std::cout << "Bunny: " << name << " has been deconstructed " << std::endl; }
+    // ~Bunny() { std::cout << "Bunny: " << name << " has been deconstructed " << std::endl; }
 
     Gender getSex() const;
     Colour getColour() const;
