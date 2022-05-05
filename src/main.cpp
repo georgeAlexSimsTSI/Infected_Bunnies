@@ -4,6 +4,7 @@
 
 int main()
 {
+    system("cls");
     std::vector<std::string> maleBunnyNames{"Ace",
                                             "Alaska",
                                             "Alexander",
@@ -183,7 +184,6 @@ int main()
                                             "Prancer",
                                             "Prince",
                                             "Prince George",
-                                            "Random",
                                             "Rascal",
                                             "Raven",
                                             "Reginald",
@@ -505,15 +505,10 @@ int main()
                                               "Zoe",
                                               "Zoey"};
     std::vector<std::string> vampireBunnyNames{"Dracula", "Count Von Count", "Mitchel","Nosferatu","Darth Maul","Darth Vader","BUGGS BUNNY"};
+    
     BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, vampireBunnyNames);
     for (int i = 0; i < 10; ++i)
-        manager.addBunny();
+        manager.addBunny(nullptr);
 
-    for (int i = 0; i < 15; ++i)
-    {
-        std::cout << "----------------------------------------" << std::endl;
-        manager.printState();
-        std::cout << "----------------------------------------" << std::endl;
-        manager.increment();
-    }
+    manager.run();
 }

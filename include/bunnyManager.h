@@ -7,13 +7,14 @@
 #include <stdlib.h>
 #include <list>
 #include <vector>
+#include <unistd.h>
 
 #include "bunny.h"
 
 class BunnyManager
 {
 private:
-    std::list<std::unique_ptr<Bunny>> bunnies;
+    std::list<std::shared_ptr<Bunny>> bunnies;
     std::vector<std::string> maleNames;
     std::vector<std::string> femaleNames;
     std::vector<std::string> vampireNames; // this is just for fun as I like the idea of original vampires having vampire like names
@@ -28,10 +29,14 @@ public:
             srand(time(NULL));
             seeded = true;
         }
+        bunnies = std::list<std::shared_ptr<Bunny>>();
     }
     void increment();
-    void addBunny();
+    void addBunny(const Bunny * mother);
     void printState();
+    void run();
+    void cull();
+    bool oldMale();
 };
 
 #endif
