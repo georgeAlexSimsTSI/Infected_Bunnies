@@ -1,13 +1,29 @@
 #include "../include/bunnyManager.h"
 
+inline std::string getColourString(const Colour &c)
+{
+    switch (c)
+    {
+    case 0:
+        return "White";
+    case 1:
+        return "Grey";
+    case 2:
+        return "Brown";
+    default:
+        return "Black";
+    }
+}
+
 void BunnyManager::increment()
 {
     Bunny::vampCount = 0;
     Bunny::maleCount = 0; // only counts eligible bunnies
     Bunny::femaleCount = 0;
     int born = 0;
-    // due to nature of list oldest naturally come to the front excluding vampires
+    // due to nature of list oldest naturally come to the front
     std::list<std::shared_ptr<Bunny>>::iterator it = bunnies.begin();
+    std::list<std::shared_ptr<Bunny>> females = std::list<std::shared_ptr<Bunny>>();
     for (; it != bunnies.end(); ++it)
     {
         if ((*it)->increment())
@@ -18,29 +34,23 @@ void BunnyManager::increment()
         }
         else
         {
-            std::string colour;
-            switch ((*it)->getColour())
+            std::cout << getColourString((*it)->getColour()) << " " << ((*it)->getSex() ? "Female " : "Male ") << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
+            if (!(*it)->isVampire() && ((*it)->getSex() && (*it)->getAge() > 1))
             {
-            case 0:
-                colour = "White ";
-                break;
-            case 1:
-                colour = "Grey ";
-                break;
-            case 2:
-                colour = "Brown ";
-                break;
-            default:
-                colour = "Black ";
-            }
-            std::cout << colour << ((*it)->getSex() ? "Female " : "Male ") << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
-            if ((*it)->getSex() && (*it)->getAge() > 1 && oldMale())
-            {
-                addBunny(it->get());
-                ++born;
+                females.push_back(*it);
             }
         }
     }
+    std::cout << std::endl;
+    sleep(1);
+    // iterate through list of females
+    for (auto it2 : females)
+    {
+        born++;
+        addBunny(it2.get());
+    }
+    std::cout << std::endl;
+    sleep(2);
     int turnedVamps = 0;
     if ((bunnies.size() - Bunny::vampCount) / 2 <= Bunny::vampCount) // if over half of all bunnies are vampires then they should all die
     {
@@ -108,7 +118,8 @@ void BunnyManager::addBunny(const Bunny *mother)
             name = maleNames[random];
         }
     }
-    std::cout << ((vampire) ? "Radioactive Mutant Vampire Bunny " : "Bunny ") << name << " was born!" << std::endl;
+    std::cout << getColourString(colour) << " " << (sex ? "Female" : "Male") << " "
+              << ((vampire) ? "Radioactive Mutant Vampire Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
     bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, vampire));
 }
 
@@ -128,14 +139,19 @@ void BunnyManager::run()
         increment();
         std::cout << std::endl;
         std::cout << "--------------------------" << std::endl;
+        sleep(2);
         printState();
         std::cout << "--------------------------" << std::endl;
         std::cout << std::endl;
         if (bunnies.size() >= 1000)
+        {
+            sleep(1);
             cull();
+        }
         std::cout.flush();
-        sleep(2);
+        sleep(1);
         healthy = bunnies.size() - Bunny::vampCount; // unsigned int was causing a rolling value
+        sleep(1);
     } while (healthy > 0);
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
@@ -144,7 +160,8 @@ void BunnyManager::run()
 
 void BunnyManager::cull()
 {
-    std::cout << "There is a cull" << std::endl;
+    std::cout << std::endl
+              << "There is a cull" << std::endl;
     int amount = bunnies.size() / 2;
     std::list<std::shared_ptr<Bunny>>::iterator it;
     for (int i = 0; i < amount; ++i)
