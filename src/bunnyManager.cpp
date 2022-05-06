@@ -16,11 +16,9 @@ BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std:
         addBunny(nullptr);
 }
 
+// Increment ages, breed, spread infection
 void BunnyManager::increment()
 {
-    Bunny::vampCount = 0;
-    Bunny::maleCount = 0; // only counts eligible bunnies
-    Bunny::femaleCount = 0;
     int born = 0;
     // due to nature of list oldest naturally come to the front
     std::list<std::shared_ptr<Bunny>>::iterator it = bunnies.begin();
@@ -73,7 +71,7 @@ void BunnyManager::increment()
     int newInfections = 0;
     for (auto it2 = infected.begin(); it2 != infected.end(); ++it2)
     {
-        // check the surronding cells for uninfected rabbits
+        // check the surrounding cells for uninfected rabbits
         std::vector<std::pair<int, int>> cells = util::validCells((*it2)->getPosition(), grid.size(), grid[0].size());
         std::shared_ptr<Bunny> sharedPtr;
         for (int i = 0; i < cells.size(); ++i)
@@ -95,9 +93,10 @@ void BunnyManager::increment()
     std::cout << std::endl
               << "Born: " << born << " Turned: " << newInfections << std::endl;
     std::cout << "Currently: " << bunnies.size() << " healthy rabbits " << std::endl;
-    std::cout << "Currently: " << Bunny::vampCount << " infected " << std::endl;
+    std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
 }
 
+// Add new bunny instance
 void BunnyManager::addBunny(const Bunny *mother)
 {
     int random = std::rand() % 100;
@@ -105,8 +104,10 @@ void BunnyManager::addBunny(const Bunny *mother)
     Colour colour = (mother == nullptr) ? Colour(random % Colour::Count) : mother->getColour();
     std::pair<int, int> pos = (mother == nullptr) ? std::pair<int, int>{std::rand() % grid.size(), std::rand() % grid[0].size()} : getFreeSpace(mother->getPosition());
 
-    if (pos.first == -1 || pos.second == -1) // no free valid spaces
-        return;                              // dont add the child
+    // potential issue with adding bunnies without a mother
+    // it will select a random cell and then overwrite anything that is in it
+    if (mother != nullptr && (pos.first == mother->getPosition().first || pos.second == mother->getPosition().second)) // no free valid spaces
+        return;                                                                                                        // dont add the child
 
     bool infected = (random <= 2);
     std::string name;
@@ -114,7 +115,7 @@ void BunnyManager::addBunny(const Bunny *mother)
     {
         random = std::rand() % infectedNames.size();
         name = infectedNames[random];
-        Bunny::vampCount++;
+        Bunny::infectedCount++;
     }
     else
     {
@@ -139,11 +140,12 @@ void BunnyManager::addBunny(const Bunny *mother)
 
 void BunnyManager::printState() const
 {
-    int healthy = (bunnies.size() - Bunny::vampCount > 0) ? bunnies.size() - Bunny::vampCount : 0;
+    int healthy = (bunnies.size() - Bunny::infectedCount > 0) ? bunnies.size() - Bunny::infectedCount : 0;
     std::cout << "Healthy bunnies: " << healthy << std::endl;
-    std::cout << "Infected bunnies: " << Bunny::vampCount << std::endl;
+    std::cout << "Infected bunnies: " << Bunny::infectedCount << std::endl;
 }
 
+// main loop
 void BunnyManager::run()
 {
     int healthy;
@@ -178,13 +180,14 @@ void BunnyManager::run()
         }
         sleep(3);
         std::cout.flush();
-        healthy = bunnies.size() - Bunny::vampCount; // unsigned int was causing a rolling value
+        healthy = bunnies.size() - Bunny::infectedCount; // unsigned int was causing a rolling value
     } while (healthy > 0);
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
     std::cout << "There are " << bunnies.size() << " Infected " << std::endl;
 }
 
+// delete 50% of the entries in a random manner
 void BunnyManager::cull()
 {
     int amount = bunnies.size() / 2;
@@ -203,6 +206,7 @@ void BunnyManager::cull()
     std::cin;
 }
 
+// check if there is a old male within one cell of the provided position
 bool BunnyManager::oldMale(const std::pair<int, int> &pos)
 {
     // return (Bunny::maleCount > 0) || std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
@@ -221,6 +225,7 @@ bool BunnyManager::oldMale(const std::pair<int, int> &pos)
     return false;
 }
 
+// selects a random position out of the free surrounding cells
 std::pair<int, int> BunnyManager::getFreeSpace(const std::pair<int, int> &pos)
 {
     std::vector<std::pair<int, int>> possibleMoves = util::validCells(pos, grid.size(), grid[0].size());
@@ -233,7 +238,7 @@ std::pair<int, int> BunnyManager::getFreeSpace(const std::pair<int, int> &pos)
         it--; // need to decrement iterator after erasing
     }
     if (possibleMoves.size() == 0)
-        return pos;
+        return pos; // if no free cells return the starting cell
     return possibleMoves[std::rand() % possibleMoves.size()];
 }
 

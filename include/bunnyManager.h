@@ -21,25 +21,26 @@ private:
     std::list<std::shared_ptr<Bunny>> bunnies;
     std::vector<std::string> maleNames;
     std::vector<std::string> femaleNames;
-    std::vector<std::string> infectedNames; // this is just for fun as I like the idea of original infecteds having infected like names
+    std::vector<std::string> infectedNames; // this is just for fun as I like the idea of original infected having distinct names
 
     // grid
     std::vector<std::vector<std::weak_ptr<Bunny>>> grid;
 
     bool verbose = false;
 
-public:
-    BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Dracula", "Count Von Count", "Mitchel"}, 20, 20, 5, false){};
+    BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Patient Zero"}, 20, 20, 5, false){};
     BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &x, const int &y, const int &n, const bool &verbose);
     void increment();
     void addBunny(const Bunny *mother);
-    void run();
     void cull();
     bool oldMale(const std::pair<int, int> &pos);
     void printState() const;
     std::pair<int, int> getFreeSpace(const std::pair<int, int> &pos);
     void displayGrid();
     static char getBunnyChar(const std::weak_ptr<Bunny> &bunny);
+
+public:
+    void run();
 };
 
 #endif
