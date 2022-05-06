@@ -1,3 +1,8 @@
+Main branch is the first version written to initial specification
+Grid branch has extension tasks implemented
+
+
+
 # Infected Bunnies
 
 Write a program that creates a linked list of bunny objects.
