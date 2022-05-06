@@ -9,6 +9,10 @@
 #include <vector>
 #include <unistd.h>
 
+// used for shuffle
+#include <chrono>
+#include <random>
+
 #include "bunny.h"
 
 class BunnyManager
@@ -17,26 +21,25 @@ private:
     std::list<std::shared_ptr<Bunny>> bunnies;
     std::vector<std::string> maleNames;
     std::vector<std::string> femaleNames;
-    std::vector<std::string> vampireNames; // this is just for fun as I like the idea of original vampires having vampire like names
+    std::vector<std::string> infectedNames; // this is just for fun as I like the idea of original infecteds having infected like names
+
+    // grid
+    std::vector<std::vector<std::weak_ptr<Bunny>>> grid;
+
+    bool verbose = false;
 
 public:
-    BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Dracula", "Count Von Count", "Mitchel"}){};
-    BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &vampireNames) : maleNames(maleNames), femaleNames(femaleNames), vampireNames(vampireNames)
-    {
-        static bool seeded = false;
-        if (!seeded)
-        {
-            srand(time(NULL));
-            seeded = true;
-        }
-        bunnies = std::list<std::shared_ptr<Bunny>>();
-    }
+    BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Dracula", "Count Von Count", "Mitchel"}, 20, 20, 5, false){};
+    BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &x, const int &y, const int &n, const bool &verbose);
     void increment();
     void addBunny(const Bunny *mother);
     void run();
     void cull();
-    bool oldMale();
+    bool oldMale(const std::pair<int, int> &pos);
     void printState() const;
+    std::pair<int, int> getFreeSpace(const std::pair<int, int> &pos);
+    void displayGrid();
+    static char getBunnyChar(const std::weak_ptr<Bunny> &bunny);
 };
 
 #endif

@@ -10,20 +10,22 @@ Colour Bunny::getColour() const { return this->colour; }
 
 std::string Bunny::getName() const
 {
-    return (this->vampire) ? "Radioactive Mutant Vampire Bunny " + this->name : "Bunny " + this->name;
+    return (this->infected) ? "Radioactive Mutant Infected Bunny " + this->name : "Bunny " + this->name;
 }
 
 unsigned int Bunny::getAge() const { return this->age; }
 
-bool Bunny::isVampire() const { return this->vampire; }
+std::pair<int, int> Bunny::getPosition() const { return this->position; }
 
-void Bunny::turnVampire() { this->vampire = true; }
+bool Bunny::isInfected() const { return this->infected; }
+
+void Bunny::turnInfected() { this->infected = true; }
 
 bool Bunny::increment()
 {
     // decided to have their age increment first
     ++age;
-    if (vampire)
+    if (infected)
     {
         if (age > 50)
             return true;
@@ -42,3 +44,5 @@ bool Bunny::increment()
     }
     return false;
 }
+
+void Bunny::setPosition(const std::pair<int, int> &pos) { this->position = pos; }
