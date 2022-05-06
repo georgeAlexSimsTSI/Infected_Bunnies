@@ -1,8 +1,6 @@
 Main branch is the first version written to initial specification
 Grid branch has extension tasks implemented
 
-
-
 # Infected Bunnies
 
 Write a program that creates a linked list of bunny objects.
@@ -21,7 +19,7 @@ New bunnies born should be the same color as their mother.
 If a bunny becomes older than 10 years old, it dies.
 If a infected bunny is born then each turn it will infect one other bunny each turn
 Infected bunnies are excluded from regular breeding and do not count as adult bunnies.
-Infecteds do not die until they reach age 50.
+Infected do not die until they reach age 50.
 The program should print a list of all the bunnies in the colony each turn along w/ all the bunnies details, sorted by age.
 The program should also output each turns events such as
 "Bunny Thumper was born!
@@ -31,16 +29,16 @@ Bunny Julius Caesar died!
 When all the bunnies have died the program terminates.
 If the bunny population exceeds 1000 a food shortage must occur killing exactly half of the bunnies (randomly chosen)
 
-★ Modify the program to run in real time, with each turn lasting 2 seconds, and a one second pause between each announement.
+★ Modify the program to run in real time, with each turn lasting 2 seconds, and a one second pause between each announcement.
 
-★★ Allow the user to hit the 'k' key to initiate a mass rabit cull! which causes half of all the rabits to be killed (randomly chosen).
+★★ Allow the user to hit the 'k' key to initiate a mass bunny cull! which causes half of all the rabbits to be killed (randomly chosen).
 
-★★★★ Modify the program to place the rabits in an 80x80 grid. Have the rabits move one space each turn randomly.
+★★★★ Modify the program to place the rabbits in an 80x80 grid. Have the rabbits move one space each turn randomly.
 Mark juvenile males with m, adult males w/ M,
-juvenile females w/ f, adult femails w/ F
+juvenile females w/ f, adult females w/ F
 infected X
 
 Modify the program so that infected only convert bunnies that end a turn on an adjacent square.
 Modify the program so that new babies are born in an empty random adjacent square next to the mother bunny. (if no empty square exits then the baby bunny isn't born)
 
-★★★★★ Modify the program so that it saves each turn to a file and can play back at accelearted speed all subsequent turns.
+★★★★★ Modify the program so that it saves each turn to a file and can play back at accelerated speed all subsequent turns.

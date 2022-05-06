@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <unistd.h>
+#include <map>
 
 #include "bunny.h"
 
@@ -17,7 +18,13 @@ private:
     std::list<std::shared_ptr<Bunny>> bunnies;
     std::vector<std::string> maleNames;
     std::vector<std::string> femaleNames;
-    std::vector<std::string> infectedNames; // this is just for fun as I like the idea of original infecteds having infected like names
+    std::vector<std::string> infectedNames; // this is just for fun as I like the idea of original infected having infected like names
+
+    void increment();
+    void addBunny(const Bunny *mother);
+    void cull();
+    bool oldMale();
+    void printState() const;
 
 public:
     BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Dracula", "Count Von Count", "Mitchel"}){};
@@ -31,12 +38,8 @@ public:
         }
         bunnies = std::list<std::shared_ptr<Bunny>>();
     }
-    void increment();
-    void addBunny(const Bunny *mother);
+
     void run();
-    void cull();
-    bool oldMale();
-    void printState() const;
 };
 
 #endif

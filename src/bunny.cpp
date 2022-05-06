@@ -1,6 +1,6 @@
 #include "../include/bunny.h"
 
-unsigned int Bunny::vampCount;
+unsigned int Bunny::infectedCount;
 unsigned int Bunny::maleCount;
 unsigned int Bunny::femaleCount;
 
@@ -27,7 +27,7 @@ bool Bunny::increment()
     {
         if (age > 50)
             return true;
-        ++vampCount;
+        ++infectedCount;
         return false;
     }
     if (age > 10)

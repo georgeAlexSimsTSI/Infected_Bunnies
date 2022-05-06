@@ -3,31 +3,27 @@
 
 inline std::string getColourString(const Colour &c)
 {
-    switch (c)
-    {
-    case 0:
-        return "White";
-    case 1:
-        return "Grey";
-    case 2:
-        return "Brown";
-    default:
-        return "Black";
-    }
+    std::map<Colour, std::string> colourMap{
+        {Colour::White, "White"},
+        {Colour::Grey, "Grey"},
+        {Colour::Brown, "Brown"},
+        {Colour::Black, "Black"}};
+    return colourMap[c];
 }
 
+// loop through bunnies list increasing their ages, breeding them then infecting
 void BunnyManager::increment()
 {
-    Bunny::vampCount = 0;
-    Bunny::maleCount = 0; // only counts eligible bunnies
-    Bunny::femaleCount = 0;
+    Bunny::infectedCount = 0;
+    Bunny::maleCount = 0;   // only counts eligible bunnies
+    Bunny::femaleCount = 0; // list of females that can have kids
     int born = 0;
     // due to nature of list oldest naturally come to the front
     std::list<std::shared_ptr<Bunny>>::iterator it = bunnies.begin();
     std::list<std::shared_ptr<Bunny>> females = std::list<std::shared_ptr<Bunny>>();
     for (; it != bunnies.end(); ++it)
     {
-        if ((*it)->increment())
+        if ((*it)->increment()) // increment returns true if the bunny is too old
         {
             std::cout << (*it)->getName() << " has died of old age " << std::endl;
             // remove from list
@@ -53,26 +49,24 @@ void BunnyManager::increment()
     std::cout << std::endl;
     sleep(2);
     int newInfections = 0;
-    if ((bunnies.size() - Bunny::vampCount) / 2 <= Bunny::vampCount) // if over half of all bunnies are infecteds then they should all die
+    if ((bunnies.size() - Bunny::infectedCount) / 2 <= Bunny::infectedCount) // if over half of all bunnies are infected then they should all die
     {
         for (auto &bun : bunnies)
         {
             if ((*bun).isInfected())
                 continue;
             std::cout << (*bun).getName() << " has been infected " << std::endl;
-            ++Bunny::vampCount;
+            ++Bunny::infectedCount;
             (*bun).turnInfected();
             newInfections++;
         }
         return;
     }
-
-    // Hacky soloution
-    int count = Bunny::vampCount;
-    for (int i = 0; (i < count) && (bunnies.size() - Bunny::vampCount - 1 > 0); ++i)
+    int count = Bunny::infectedCount;
+    for (int i = 0; (i < count) && (bunnies.size() - Bunny::infectedCount - 1 > 0); ++i)
     {
         it = bunnies.begin();
-        int random = std::rand() % (bunnies.size() - Bunny::vampCount - 1);
+        int random = std::rand() % (bunnies.size() - Bunny::infectedCount - 1);
         for (int j = 0; j <= random;)
         {
             ++it;
@@ -82,29 +76,30 @@ void BunnyManager::increment()
             }
             ++j;
         }
-        std::cout << (*it)->getName() << " has been turned into a infected " << std::endl;
-        ++Bunny::vampCount;
+        std::cout << (*it)->getName() << " has been infected " << std::endl;
+        ++Bunny::infectedCount;
         (*it)->turnInfected();
         newInfections++;
     }
     std::cout << std::endl
               << "Born: " << born << " Turned: " << newInfections << std::endl;
     std::cout << "Currently: " << bunnies.size() << " healthy rabbits " << std::endl;
-    std::cout << "Currently: " << Bunny::vampCount << " infecteds " << std::endl;
+    std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
 }
 
+// Method for creating new bunnies
 void BunnyManager::addBunny(const Bunny *mother)
 {
     int random = std::rand() % 100;
     Gender sex = (random % 2 == 0) ? Gender::Male : Gender::Female;
-    Colour colour = (mother == nullptr) ? Colour(random % Colour::Count) : mother->getColour();
+    Colour colour = (mother == nullptr) ? Colour(random % Colour::Count) : mother->getColour(); // if no mother pick random colour
     bool infected = (random <= 2);
     std::string name;
     if (infected)
     {
         random = std::rand() % infectedNames.size();
         name = infectedNames[random];
-        Bunny::vampCount++;
+        Bunny::infectedCount++;
     }
     else
     {
@@ -120,17 +115,18 @@ void BunnyManager::addBunny(const Bunny *mother)
         }
     }
     std::cout << getColourString(colour) << " " << (sex ? "Female" : "Male") << " "
-              << ((infected) ? "    Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
+              << ((infected) ? "Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
     bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, infected));
 }
 
 void BunnyManager::printState() const
 {
-    int healthy = (bunnies.size() - Bunny::vampCount > 0) ? bunnies.size() - Bunny::vampCount : 0;
+    int healthy = (bunnies.size() - Bunny::infectedCount > 0) ? bunnies.size() - Bunny::infectedCount : 0;
     std::cout << "Healthy bunnies: " << healthy << std::endl;
-    std::cout << "Infected bunnies: " << Bunny::vampCount << std::endl;
+    std::cout << "Infected bunnies: " << Bunny::infectedCount << std::endl;
 }
 
+// main loop
 void BunnyManager::run()
 {
     int healthy;
@@ -163,32 +159,34 @@ void BunnyManager::run()
 
         std::cout.flush();
         sleep(1);
-        healthy = bunnies.size() - Bunny::vampCount; // unsigned int was causing a rolling value
+        healthy = bunnies.size() - Bunny::infectedCount; // unsigned int was causing a rolling value
         sleep(1);
     } while (healthy > 0);
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
-    std::cout << "There are " << bunnies.size() << " Infecteds " << std::endl;
+    std::cout << "There are " << bunnies.size() << " Infected " << std::endl;
 }
 
+// Kill of half of the bunnies in the system
+// both branches have a different version
 void BunnyManager::cull()
 {
-    int amount = bunnies.size() / 2;
+    int amount = bunnies.size() / 2, i = 0;
     std::cout << std::endl
               << "There is a cull: " << amount << " will be culled" << std::endl;
-    std::list<std::shared_ptr<Bunny>>::iterator it;
-    for (int i = 0; i < amount; ++i)
+    for (auto it = bunnies.begin(); it != --bunnies.end(); ++it) // alternate method would be to do a 50 50 check on if to kill the current rabbit or the next one
     {
-        int rand = std::rand() % bunnies.size();
-        it = bunnies.begin();
-        std::advance(it, rand);
-        // std::cout << (*it)->getName() << " has been culled " << std::endl;
-        bunnies.erase(it);
+        if (std::rand() % 2 != 0)
+            ++it;
+        it = bunnies.erase(it);
+        if (i == amount)
+            break;
     }
     std::cout << bunnies.size() << std::endl;
     std::cin;
 }
 
+// old leftover that is no longer used but is left here for future refernce
 bool BunnyManager::oldMale()
 {
     return (Bunny::maleCount > 0) || std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)

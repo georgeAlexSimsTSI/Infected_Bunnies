@@ -28,7 +28,7 @@ private:
 
 public:
     // These are variables used for counting, when the manager progresses the year these will be set back to zero and then increment
-    static unsigned int vampCount;
+    static unsigned int infectedCount;
     static unsigned int maleCount;
     static unsigned int femaleCount;
 
