@@ -10,20 +10,20 @@ Colour Bunny::getColour() const { return this->colour; }
 
 std::string Bunny::getName() const
 {
-    return (this->vampire) ? "Radioactive Mutant Vampire Bunny " + this->name : "Bunny " + this->name;
+    return (this->infected) ? "    Infected Bunny " + this->name : "Bunny " + this->name;
 }
 
 unsigned int Bunny::getAge() const { return this->age; }
 
-bool Bunny::isVampire() const { return this->vampire; }
+bool Bunny::isInfected() const { return this->infected; }
 
-void Bunny::turnVampire() { this->vampire = true; }
+void Bunny::turnInfected() { this->infected = true; }
 
 bool Bunny::increment()
 {
     // decided to have their age increment first
     ++age;
-    if (vampire)
+    if (infected)
     {
         if (age > 50)
             return true;

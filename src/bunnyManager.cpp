@@ -36,7 +36,7 @@ void BunnyManager::increment()
         else
         {
             std::cout << getColourString((*it)->getColour()) << " " << ((*it)->getSex() ? "Female " : "Male ") << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
-            if (!(*it)->isVampire() && ((*it)->getSex() && (*it)->getAge() > 1))
+            if (!(*it)->isInfected() && ((*it)->getSex() && (*it)->getAge() > 1))
             {
                 females.push_back(*it);
             }
@@ -52,17 +52,17 @@ void BunnyManager::increment()
     }
     std::cout << std::endl;
     sleep(2);
-    int turnedVamps = 0;
-    if ((bunnies.size() - Bunny::vampCount) / 2 <= Bunny::vampCount) // if over half of all bunnies are vampires then they should all die
+    int newInfections = 0;
+    if ((bunnies.size() - Bunny::vampCount) / 2 <= Bunny::vampCount) // if over half of all bunnies are infecteds then they should all die
     {
         for (auto &bun : bunnies)
         {
-            if ((*bun).isVampire())
+            if ((*bun).isInfected())
                 continue;
-            std::cout << (*bun).getName() << " has turned into a vampire " << std::endl;
+            std::cout << (*bun).getName() << " has been infected " << std::endl;
             ++Bunny::vampCount;
-            (*bun).turnVampire();
-            turnedVamps++;
+            (*bun).turnInfected();
+            newInfections++;
         }
         return;
     }
@@ -76,21 +76,21 @@ void BunnyManager::increment()
         for (int j = 0; j <= random;)
         {
             ++it;
-            if ((*it)->isVampire())
+            if ((*it)->isInfected())
             {
                 continue;
             }
             ++j;
         }
-        std::cout << (*it)->getName() << " has been turned into a vampire " << std::endl;
+        std::cout << (*it)->getName() << " has been turned into a infected " << std::endl;
         ++Bunny::vampCount;
-        (*it)->turnVampire();
-        turnedVamps++;
+        (*it)->turnInfected();
+        newInfections++;
     }
     std::cout << std::endl
-              << "Born: " << born << " Turned: " << turnedVamps << std::endl;
+              << "Born: " << born << " Turned: " << newInfections << std::endl;
     std::cout << "Currently: " << bunnies.size() << " healthy rabbits " << std::endl;
-    std::cout << "Currently: " << Bunny::vampCount << " vampires " << std::endl;
+    std::cout << "Currently: " << Bunny::vampCount << " infecteds " << std::endl;
 }
 
 void BunnyManager::addBunny(const Bunny *mother)
@@ -98,12 +98,12 @@ void BunnyManager::addBunny(const Bunny *mother)
     int random = std::rand() % 100;
     Gender sex = (random % 2 == 0) ? Gender::Male : Gender::Female;
     Colour colour = (mother == nullptr) ? Colour(random % Colour::Count) : mother->getColour();
-    bool vampire = (random <= 2);
+    bool infected = (random <= 2);
     std::string name;
-    if (vampire)
+    if (infected)
     {
-        random = std::rand() % vampireNames.size();
-        name = vampireNames[random];
+        random = std::rand() % infectedNames.size();
+        name = infectedNames[random];
         Bunny::vampCount++;
     }
     else
@@ -120,15 +120,15 @@ void BunnyManager::addBunny(const Bunny *mother)
         }
     }
     std::cout << getColourString(colour) << " " << (sex ? "Female" : "Male") << " "
-              << ((vampire) ? "Radioactive Mutant Vampire Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
-    bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, vampire));
+              << ((infected) ? "    Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
+    bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, infected));
 }
 
 void BunnyManager::printState() const
 {
     int healthy = (bunnies.size() - Bunny::vampCount > 0) ? bunnies.size() - Bunny::vampCount : 0;
     std::cout << "Healthy bunnies: " << healthy << std::endl;
-    std::cout << "Vampire bunnies: " << Bunny::vampCount << std::endl;
+    std::cout << "Infected bunnies: " << Bunny::vampCount << std::endl;
 }
 
 void BunnyManager::run()
@@ -168,7 +168,7 @@ void BunnyManager::run()
     } while (healthy > 0);
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
-    std::cout << "There are " << bunnies.size() << " Vampires " << std::endl;
+    std::cout << "There are " << bunnies.size() << " Infecteds " << std::endl;
 }
 
 void BunnyManager::cull()

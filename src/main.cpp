@@ -504,9 +504,9 @@ int main()
                                               "Woozy",
                                               "Zoe",
                                               "Zoey"};
-    std::vector<std::string> vampireBunnyNames{"Dracula", "Count Von Count", "Mitchel","Nosferatu","Darth Maul","Darth Vader","BUGGS BUNNY"};
+    std::vector<std::string> infectedBunnyNames{"Dracula", "Count Von Count", "Mitchel","Nosferatu","Darth Maul","Darth Vader","BUGGS BUNNY"};
     
-    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, vampireBunnyNames);
+    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames);
     for (int i = 0; i < 10; ++i)
         manager.addBunny(nullptr);
 
