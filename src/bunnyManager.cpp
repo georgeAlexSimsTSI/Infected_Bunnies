@@ -1,4 +1,5 @@
 #include "../include/bunnyManager.h"
+#include "../include/userInput.h"
 
 inline std::string getColourString(const Colour &c)
 {
@@ -123,7 +124,7 @@ void BunnyManager::addBunny(const Bunny *mother)
     bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, vampire));
 }
 
-void BunnyManager::printState()
+void BunnyManager::printState() const
 {
     int healthy = (bunnies.size() - Bunny::vampCount > 0) ? bunnies.size() - Bunny::vampCount : 0;
     std::cout << "Healthy bunnies: " << healthy << std::endl;
@@ -142,12 +143,24 @@ void BunnyManager::run()
         sleep(2);
         printState();
         std::cout << "--------------------------" << std::endl;
-        std::cout << std::endl;
+
         if (bunnies.size() >= 1000)
         {
+            std::cout << std::endl;
             sleep(1);
             cull();
         }
+
+        sleep(1);
+        std::cout << std::endl
+                  << "Enter k to cull: " << std::endl;
+        char c = userInput::waitForCharInput(2);
+        if (c == 'k' || c == 'K')
+        {
+            std::cout << "User has initiated a cull " << std::endl;
+            cull();
+        }
+
         std::cout.flush();
         sleep(1);
         healthy = bunnies.size() - Bunny::vampCount; // unsigned int was causing a rolling value
@@ -155,14 +168,14 @@ void BunnyManager::run()
     } while (healthy > 0);
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
-    std::cout << "There are " << Bunny::vampCount << " Vampires " << std::endl;
+    std::cout << "There are " << bunnies.size() << " Vampires " << std::endl;
 }
 
 void BunnyManager::cull()
 {
-    std::cout << std::endl
-              << "There is a cull" << std::endl;
     int amount = bunnies.size() / 2;
+    std::cout << std::endl
+              << "There is a cull: " << amount << " will be culled" << std::endl;
     std::list<std::shared_ptr<Bunny>>::iterator it;
     for (int i = 0; i < amount; ++i)
     {

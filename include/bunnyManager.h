@@ -32,11 +32,11 @@ public:
         bunnies = std::list<std::shared_ptr<Bunny>>();
     }
     void increment();
-    void addBunny(const Bunny * mother);
-    void printState();
+    void addBunny(const Bunny *mother);
     void run();
     void cull();
     bool oldMale();
+    void printState() const;
 };
 
 #endif
