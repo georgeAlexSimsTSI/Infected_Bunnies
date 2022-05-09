@@ -3,13 +3,10 @@
 #include <iostream>
 #include <fstream>
 
-int main()
+inline void loadData(std::vector<std::string> &names, const std::string &fileName)
 {
-    system("cls");
     std::ifstream namesFile;
     std::string name;
-    // male names are from https://www.verywellfamily.com/top-1000-baby-boy-names-2757618
-    std::vector<std::string> maleBunnyNames;
     try
     {
         namesFile.open("../maleNames.txt");
@@ -17,36 +14,35 @@ int main()
         {
             std::getline(namesFile, name);
             if (!name.empty())
-                maleBunnyNames.push_back(name);
+                names.push_back(name);
         }
         namesFile.close();
     }
     catch (...)
     {
         namesFile.close();
-        maleBunnyNames = {"Jason", "Liam", "Noah", "Oliver", "Peter"};
     }
+}
+
+int main()
+{
+    system("cls");
+
+    // male names are from https://www.verywellfamily.com/top-1000-baby-boy-names-2757618
+    std::vector<std::string> maleBunnyNames;
+    loadData(maleBunnyNames, "../maleNames.txt");
+    if (maleBunnyNames.size() == 0)
+        maleBunnyNames = {"Jason", "Liam", "Noah", "Oliver", "Peter"};
+
     // female names are from https://www.verywellfamily.com/top-1000-baby-girl-names-2757832
     std::vector<std::string> femaleBunnyNames;
-    try
-    {
-        namesFile.open("../femaleNames.txt");
-        while (namesFile)
-        {
-            std::getline(namesFile, name);
-            if (!name.empty())
-                femaleBunnyNames.push_back(name);
-        }
-        namesFile.close();
-    }
-    catch (...)
-    {
-        namesFile.close();
+    loadData(femaleBunnyNames,"../femaleNames.txt");
+    if(femaleBunnyNames.size() == 0)
         femaleBunnyNames = {"Olivia", "Emma", "Charlotte", "Amelia", "Ava"};
-    }
+        
     std::vector<std::string> infectedBunnyNames{"Patient Zero"};
 
-    int gridHeight = 80, gridWidth = 80, startingNumber = 500; // would recomend a smaller grid size as it is easier to read
+    int gridHeight = 80, gridWidth = 80, startingNumber = 500; // would recommend a smaller grid size as it is easier to read
     bool verbose = false;
     BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, gridHeight, gridWidth, startingNumber, verbose); // numbers are x , y and starting number
     manager.run();
