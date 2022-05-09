@@ -3,42 +3,63 @@ Grid branch has extension tasks implemented
 
 # Infected Bunnies
 
-Write a program that creates a linked list of bunny objects.
-Each bunny object must have
-Sex: Male, Female (random at creation 50/50)
-color: white, brown, black, spotted
-age : 0-10 (years old)
-Name : randomly chosen at creation from a list of bunny names.
-Infected: true/false (decided at time of bunny creation 2% chance of true)
+This is the main branch version of the project and has focussed on implementing the main parts of the specification. For my Extension task implementations look at the branch <b>grid</b>.
 
-At program initialization 5 bunnies must be created and given random colors.
-Each turn afterwards the bunnies age 1 year.
-So long as there is at least one male age 2 or older, for each female bunny in the list age 2 or older;
-a new bunny is created each turn. (i.e. if there was 1 adult male and 3 adult female bunnies, three new bunnies would be born each turn)
-New bunnies born should be the same color as their mother.
-If a bunny becomes older than 10 years old, it dies.
-If a infected bunny is born then each turn it will infect one other bunny each turn
-Infected bunnies are excluded from regular breeding and do not count as adult bunnies.
-Infected do not die until they reach age 50.
-The program should print a list of all the bunnies in the colony each turn along w/ all the bunnies details, sorted by age.
-The program should also output each turns events such as
-"Bunny Thumper was born!
-Bunny Fufu was born!
-Infected Bunny Jason was born!
-Bunny Julius Caesar died!
-When all the bunnies have died the program terminates.
-If the bunny population exceeds 1000 a food shortage must occur killing exactly half of the bunnies (randomly chosen)
+<pre>
+At program initialization, 5 bunnies must be created and given random colours, age can be 0 or random between 0 and 9. 
 
-★ Modify the program to run in real time, with each turn lasting 2 seconds, and a one second pause between each announcement.
+Each turn, the bunnies age 1 year. 
 
-★★ Allow the user to hit the 'k' key to initiate a mass bunny cull! which causes half of all the rabbits to be killed (randomly chosen).
+As long as there is a male (aged 2 or older), for each female in the list (aged 2 or older) a new bunny is created each turn. (E.G. if there was 1 adult male and 3 adult females, three new bunnies would be born each turn) 
 
-★★★★ Modify the program to place the rabbits in an 80x80 grid. Have the rabbits move one space each turn randomly.
-Mark juvenile males with m, adult males w/ M,
-juvenile females w/ f, adult females w/ F
-infected X
+New born bunnies should be the same colour as their mother. 
 
-Modify the program so that infected only convert bunnies that end a turn on an adjacent square.
-Modify the program so that new babies are born in an empty random adjacent square next to the mother bunny. (if no empty square exits then the baby bunny isn't born)
+If a bunny becomes older than 10 years old, it dies. 
 
-★★★★★ Modify the program so that it saves each turn to a file and can play back at accelerated speed all subsequent turns.
+If an infected bunny is born, each turn it will change one normal bunny into a infected bunny (E.G. If there are two infected bunnies two bunnies will be changed each turn and so on...) 
+
+Infected bunnies are excluded from regular breeding and do not count as adult bunnies. 
+
+Infected do not die until they reach age 50. 
+
+Each turn, the program should print a list of all the bunnies in the colony with all the details, sorted by age. 
+
+The program should also output each turns events such as: 
+
+Bunny Keith was born! 
+
+Bunny Carrol was born! 
+
+Infected Bunny Steve was born! 
+
+Bunny Susan died! 
+
+When all the bunnies have died the program terminates. 
+
+If the bunny population exceeds 1000 a food shortage must occur killing exactly half of the bunnies (randomly chosen) 
+</pre>
+
+Additionally in the main branch the following are also implemented.
+
+<pre>
+★ Modify the program to run in real time, with each turn lasting 2 seconds, and a one second pause between each announcement. 
+
+★★ Remove the population limit and see how many bunnies your program can handle  
+
+Allow the user to hit the 'k' key to initiate a mass rabbit cull! which causes half of all the rabbits to be killed (randomly chosen). 
+</pre>
+
+# Notes before running
+
+* The main file is mainly for providing the different rabbit names and creating the manager instance.
+
+* The programs speed is due to staggering announcements with sleep commands as specified by specification. 
+
+* Across the two different branches each one has a different cull method implementation. The specification stated that the cull should be entirely random however there were concern's about performance and how random it was.
+
+# To do section
+
+* <pre>★★★★ Modify the program so that it saves each turn to a file and can play back at accelerated speed all subsequent turns. </pre> Made practice examples for file IO but had issues merging with project. <br> </br>
+
+
+
