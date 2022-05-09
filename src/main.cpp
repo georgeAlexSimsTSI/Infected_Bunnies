@@ -2010,7 +2010,7 @@ int main()
     std::vector<std::string> infectedBunnyNames{"Patient Zero"};
 
     int gridHeight = 80, gridWidth = 80, startingNumber = 500; // would recomend a smaller grid size as it is easier to read
-    bool verbose = true;
+    bool verbose = false;
     BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, gridHeight, gridWidth, startingNumber, verbose); // numbers are x , y and starting number
     manager.run();
 }
