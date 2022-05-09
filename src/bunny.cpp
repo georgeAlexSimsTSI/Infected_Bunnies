@@ -10,7 +10,7 @@ Colour Bunny::getColour() const { return this->colour; }
 
 std::string Bunny::getName() const
 {
-    return (this->infected) ? "    Infected Bunny " + this->name : "Bunny " + this->name;
+    return (this->infected) ? "Infected Bunny " + this->name : "Bunny " + this->name;
 }
 
 unsigned int Bunny::getAge() const { return this->age; }
@@ -19,6 +19,11 @@ bool Bunny::isInfected() const { return this->infected; }
 
 void Bunny::turnInfected() { this->infected = true; }
 
+/**
+ * @brief method responsible for incrementing a bunnies age
+ * @return true if the bunny dies of old age
+ * @return false if the bunny is still alive
+ */
 bool Bunny::increment()
 {
     // decided to have their age increment first

@@ -2008,9 +2008,6 @@ int main()
                                               "Belle",
                                               "Kadence"};
     std::vector<std::string> infectedBunnyNames{"Patient Zero"};
-    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames);
-    for (int i = 0; i < 10; ++i)
-        manager.addBunny(nullptr);
-
+    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, 10);
     manager.run();
 }

@@ -1,6 +1,11 @@
 #include "../include/bunnyManager.h"
 #include "../include/userInput.h"
 
+/**
+ * @brief Get the Colour String
+ * @param c a Colour enum
+ * @return std::string the colour string
+ */
 inline std::string getColourString(const Colour &c)
 {
     std::map<Colour, std::string> colourMap{
@@ -11,7 +16,31 @@ inline std::string getColourString(const Colour &c)
     return colourMap[c];
 }
 
-// loop through bunnies list increasing their ages, breeding them then infecting
+/**
+ * @brief Construct a new Bunny
+ * @param maleNames names of male bunnies
+ * @param femaleNames names of female bunnies
+ * @param infectedNames names of infected bunnies
+ * @param startingAmount the amount of bunnies to create at the start
+ */
+BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &startingAmount) : maleNames(maleNames), femaleNames(femaleNames), infectedNames(infectedNames)
+{
+    static bool seeded = false;
+    if (!seeded)
+    {
+        srand(time(NULL));
+        seeded = true;
+    }
+    bunnies = std::list<std::shared_ptr<Bunny>>();
+
+    for (int i = 0; i < startingAmount; ++i)
+        addBunny(nullptr);
+}
+
+/**
+ * @brief method that increments bunny ages, breeds them and then spreads the infection
+ *
+ */
 void BunnyManager::increment()
 {
     Bunny::infectedCount = 0;
@@ -87,7 +116,11 @@ void BunnyManager::increment()
     std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
 }
 
-// Method for creating new bunnies
+/**
+ * @brief method to create more bunny instances
+ *
+ * @param mother a pointer to the bunny mother, this is used to determine the colour of the child, if null it is random
+ */
 void BunnyManager::addBunny(const Bunny *mother)
 {
     int random = std::rand() % 100;
@@ -119,6 +152,9 @@ void BunnyManager::addBunny(const Bunny *mother)
     bunnies.emplace_back(std::make_unique<Bunny>(sex, colour, name, 0, infected));
 }
 
+/**
+ * @brief print out the state of the program, how many healthy bunnies there are and how many are infected
+ */
 void BunnyManager::printState() const
 {
     int healthy = (bunnies.size() - Bunny::infectedCount > 0) ? bunnies.size() - Bunny::infectedCount : 0;
@@ -126,7 +162,10 @@ void BunnyManager::printState() const
     std::cout << "Infected bunnies: " << Bunny::infectedCount << std::endl;
 }
 
-// main loop
+/**
+ * @brief Main logic loop that increments culls then displays status
+ *
+ */
 void BunnyManager::run()
 {
     int healthy;

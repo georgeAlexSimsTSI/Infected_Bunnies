@@ -12,10 +12,13 @@
 
 #include "bunny.h"
 
+/**
+ * @brief class responsible for handling all logic and memory storage
+ */
 class BunnyManager
 {
 private:
-    std::list<std::shared_ptr<Bunny>> bunnies;
+    std::list<std::shared_ptr<Bunny>> bunnies; // list of shared ptr objects for Bunnies on the heap
     std::vector<std::string> maleNames;
     std::vector<std::string> femaleNames;
     std::vector<std::string> infectedNames; // this is just for fun as I like the idea of original infected having infected like names
@@ -27,18 +30,8 @@ private:
     void printState() const;
 
 public:
-    BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Dracula", "Count Von Count", "Mitchel"}){};
-    BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames) : maleNames(maleNames), femaleNames(femaleNames), infectedNames(infectedNames)
-    {
-        static bool seeded = false;
-        if (!seeded)
-        {
-            srand(time(NULL));
-            seeded = true;
-        }
-        bunnies = std::list<std::shared_ptr<Bunny>>();
-    }
-
+    BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Dracula", "Count Von Count", "Mitchel"}, 10){};
+    BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &startingAmount);
     void run();
 };
 

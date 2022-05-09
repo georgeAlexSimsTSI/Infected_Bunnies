@@ -3,20 +3,31 @@
 
 #include <string>
 #include <iostream>
+
+/**
+ * @brief enums representing gender
+ */
 enum Gender
 {
     Male,
     Female
 };
+
+/**
+ * @brief enum representing Colours
+ */
 enum Colour
 {
     White,
     Grey,
     Brown,
     Black,
-    Count //THIS MUST REMAIN AS THE LAST ENUM
+    Count // THIS MUST REMAIN AS THE LAST ENUM
 };
 
+/**
+ * @brief class representing a bunny
+ */
 class Bunny
 {
 private:
