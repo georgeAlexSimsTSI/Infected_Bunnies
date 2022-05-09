@@ -16,7 +16,9 @@ BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std:
         addBunny(nullptr);
 }
 
-// Increment ages, breed, spread infection
+/**
+ * @brief method that increments time for all rabits, carries out rabbit births and then spreads the infection
+ */
 void BunnyManager::increment()
 {
     int born = 0;
@@ -88,15 +90,20 @@ void BunnyManager::increment()
         int tmp = rand() % cells.size();
         sharedPtr = grid[cells[tmp].first][cells[tmp].second].lock();
         sharedPtr->turnInfected();
+        ++newInfections;
     }
-
+    Bunny::infectedCount = infected.size(); // used to increment this while iterating
     std::cout << std::endl
               << "Born: " << born << " Turned: " << newInfections << std::endl;
-    std::cout << "Currently: " << bunnies.size() << " healthy rabbits " << std::endl;
+    std::cout << "Currently: " << bunnies.size() - Bunny::infectedCount << " healthy rabbits " << std::endl;
     std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
 }
 
-// Add new bunny instance
+/**
+ * @brief create new bunny instances
+ *
+ * @param mother a pointer to the mother object this is used to determine position and colour, if null these are random
+ */
 void BunnyManager::addBunny(const Bunny *mother)
 {
     int random = std::rand() % 100;
@@ -138,6 +145,9 @@ void BunnyManager::addBunny(const Bunny *mother)
     grid[pos.first][pos.second] = shardPtr;
 }
 
+/**
+ * @brief method to print the current state of the program, how many bunnies are healthy and how many are infected
+ */
 void BunnyManager::printState() const
 {
     int healthy = (bunnies.size() - Bunny::infectedCount > 0) ? bunnies.size() - Bunny::infectedCount : 0;
@@ -145,7 +155,10 @@ void BunnyManager::printState() const
     std::cout << "Infected bunnies: " << Bunny::infectedCount << std::endl;
 }
 
-// main loop
+/**
+ * @brief This is the main logic loop that increments culls and displays the grid
+ *
+ */
 void BunnyManager::run()
 {
     int healthy;
@@ -174,9 +187,11 @@ void BunnyManager::run()
         char c = userInput::waitForCharInput(2);
         if (c == 'k' || c == 'K')
         {
+            system("cls");
             std::cout << "User has initiated a cull " << std::endl;
             cull();
             sleep(2);
+            displayGrid();
         }
         sleep(3);
         std::cout.flush();
@@ -242,21 +257,15 @@ std::pair<int, int> BunnyManager::getFreeSpace(const std::pair<int, int> &pos)
     return possibleMoves[std::rand() % possibleMoves.size()];
 }
 
-void BunnyManager::displayGrid()
+void BunnyManager::displayGrid() const
 {
-    for (int i = 0; i < (grid[0].size() * 2) + 1; ++i)
-        std::cout << "-";
     std::cout << std::endl;
     for (const auto &i : grid)
     {
-        std::cout << "|";
         for (const auto &j : i)
         {
-            std::cout << getBunnyChar(j) << "|";
+            std::cout << getBunnyChar(j) << " ";
         }
-        std::cout << std::endl;
-        for (int k = 0; k < (grid[0].size() * 2) + 1; ++k)
-            std::cout << "-";
         std::cout << std::endl;
     }
 }
@@ -265,7 +274,7 @@ char BunnyManager::getBunnyChar(const std::weak_ptr<Bunny> &bunny)
 {
     std::shared_ptr<Bunny> sharedPtr;
     if (!(sharedPtr = bunny.lock()))
-        return ' ';
+        return '.';
 
     if (sharedPtr->getAge() < 2)
     {

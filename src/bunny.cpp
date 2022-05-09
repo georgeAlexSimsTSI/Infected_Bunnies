@@ -8,10 +8,7 @@ Gender Bunny::getSex() const { return this->sex; }
 
 Colour Bunny::getColour() const { return this->colour; }
 
-std::string Bunny::getName() const
-{
-    return (this->infected) ? "Radioactive Mutant Infected Bunny " + this->name : "Bunny " + this->name;
-}
+std::string Bunny::getName() const { return (this->infected) ? "Radioactive Mutant Infected Bunny " + this->name : "Bunny " + this->name; }
 
 unsigned int Bunny::getAge() const { return this->age; }
 
@@ -21,6 +18,12 @@ bool Bunny::isInfected() const { return this->infected; }
 
 void Bunny::turnInfected() { this->infected = true; }
 
+/**
+ * @brief increment the bunny age
+ *
+ * @return true if the rabbit dies of old age
+ * @return false if the rabbit is still alive
+ */
 bool Bunny::increment()
 {
     // decided to have their age increment first

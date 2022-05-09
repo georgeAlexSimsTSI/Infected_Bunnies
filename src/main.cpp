@@ -2009,6 +2009,6 @@ int main()
                                               "Kadence"};
     std::vector<std::string> infectedBunnyNames{"Patient Zero"};
 
-    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, 20, 40, 40, false);
+    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, 80, 80, 80, false); // numbers are x , y and starting number
     manager.run();
 }

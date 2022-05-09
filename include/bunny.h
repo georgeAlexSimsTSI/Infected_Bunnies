@@ -5,12 +5,18 @@
 #include <iostream>
 #include "util.h"
 
+/**
+ * @brief utility enum for bunny gender
+ */
 enum Gender
 {
     Male,
     Female
 };
 
+/**
+ * @brief class responsible for representing bunnies
+ */
 class Bunny
 {
 private:
