@@ -139,7 +139,7 @@ void BunnyManager::addBunny(const Bunny *mother)
     }
     if (verbose)
         std::cout << ColourUtility::getColourString(colour) << " " << (sex ? "Female" : "Male") << " "
-                  << ((infected) ? "Radioactive Mutant Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
+                  << ((infected) ? "Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
     std::shared_ptr<Bunny> shardPtr = std::make_shared<Bunny>(sex, colour, name, 0, infected, pos);
     bunnies.emplace_back(shardPtr);
     grid[pos.first][pos.second] = shardPtr;

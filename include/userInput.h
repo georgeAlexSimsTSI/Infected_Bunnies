@@ -1,4 +1,5 @@
-
+#ifndef USER_INPUT_H
+#define USER_INPUT_H
 #include <conio.h>
 #include <unistd.h>
 
@@ -25,4 +26,5 @@ namespace userInput
         }
         return c;
     }
-}
+};
+#endif
