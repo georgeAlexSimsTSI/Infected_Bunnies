@@ -19,7 +19,7 @@ enum Gender
 enum Colour
 {
     White,
-    Grey,
+    Spotted,
     Brown,
     Black,
     Count // THIS MUST REMAIN AS THE LAST ENUM
@@ -43,7 +43,7 @@ public:
     static unsigned int maleCount;
     static unsigned int femaleCount;
 
-    Bunny() : Bunny(Gender::Male, Colour::Grey, std::string("Thumper"), 0, false){};
+    Bunny() : Bunny(Gender::Male, Colour::Spotted, std::string("Thumper"), 0, false){};
     Bunny(const Gender &sex, const Colour &colour, const std::string &name, const unsigned int &age, const bool &infected) : sex(sex), colour(colour), name(name), age(age), infected(infected){};
     // ~Bunny() { std::cout << "Bunny: " << name << " has been deconstructed " << std::endl; }
 
