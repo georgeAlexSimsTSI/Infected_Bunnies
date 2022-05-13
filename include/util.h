@@ -21,9 +21,9 @@ namespace util
 enum Colour
 {
     White,
-    Grey,
     Brown,
     Black,
+    Spotted,
     Count // THIS MUST REMAIN AS THE LAST ENUM, this is used to keep track of how many colours there are
 };
 

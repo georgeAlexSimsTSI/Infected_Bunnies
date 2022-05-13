@@ -33,7 +33,7 @@ public:
     static unsigned int maleCount;
     static unsigned int femaleCount;
 
-    Bunny() : Bunny(Gender::Male, Colour::Grey, std::string("Thumper"), 0, false){};
+    Bunny() : Bunny(Gender::Male, Colour::White, std::string("Thumper"), 0, false){};
     Bunny(const Gender &sex, const Colour &colour, const std::string &name, const unsigned int &age, const bool &infected) : Bunny(sex, colour, name, age, infected, std::make_pair(0, 0)){};
     Bunny(const Gender &sex, const Colour &colour, const std::string &name, const unsigned int &age, const bool &infected, const std::pair<int, int> &position) : sex(sex), colour(colour), name(name), age(age), infected(infected), position(position){};
     // ~Bunny() { std::cout << "Bunny: " << name << " has been deconstructed " << std::endl; }

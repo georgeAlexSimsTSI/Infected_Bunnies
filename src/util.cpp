@@ -50,7 +50,7 @@ namespace ColourUtility
     {
         std::map<Colour, std::string> colourMap{
             {Colour::White, "White"},
-            {Colour::Grey, "Grey"},
+            {Colour::Spotted, "Spotted"},
             {Colour::Brown, "Brown"},
             {Colour::Black, "Black"}};
         return colourMap[c];
