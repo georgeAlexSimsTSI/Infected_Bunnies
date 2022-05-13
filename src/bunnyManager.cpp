@@ -116,6 +116,11 @@ void BunnyManager::addBunny(const Bunny *mother)
     if (mother != nullptr && (pos.first == mother->getPosition().first || pos.second == mother->getPosition().second)) // no free valid spaces
         return;                                                                                                        // dont add the child
 
+    if (!grid[pos.first][pos.second].expired())
+    {
+        return;
+    }
+
     bool infected = (random <= 2);
     std::string name;
     if (infected)
@@ -196,7 +201,8 @@ void BunnyManager::run()
         sleep(3);
         std::cout.flush();
         healthy = bunnies.size() - Bunny::infectedCount; // unsigned int was causing a rolling value
-    } while (healthy > 0);
+    } while (healthy > 0);                               // issue when a cull occurs
+    displayGrid();
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
     std::cout << "There are " << bunnies.size() << " Infected " << std::endl;
@@ -215,6 +221,9 @@ void BunnyManager::cull()
         it = bunnies.begin();
         std::advance(it, rand);
         // std::cout << (*it)->getName() << " has been culled " << std::endl;
+        if ((*it)->isInfected())
+            --Bunny::infectedCount;
+
         bunnies.erase(it);
     }
     std::cout << bunnies.size() << std::endl;
@@ -245,7 +254,7 @@ std::pair<int, int> BunnyManager::getFreeSpace(const std::pair<int, int> &pos)
 {
     std::vector<std::pair<int, int>> possibleMoves = util::validCells(pos, grid.size(), grid[0].size());
     // iterate through possible moves checking if the space is empty or not
-    for (auto it = possibleMoves.begin(); it != possibleMoves.begin(); ++it)
+    for (auto it = possibleMoves.begin(); it != possibleMoves.end(); ++it)
     {
         if (grid[it->first][it->second].expired()) // space is free
             continue;
