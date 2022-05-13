@@ -2,7 +2,7 @@
 #include "../include/userInput.h"
 #include "../include/util.h"
 
-BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &x, const int &y, const int &n, const bool &verbose) : maleNames(maleNames), femaleNames(femaleNames), infectedNames(infectedNames), verbose(verbose)
+BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &x, const int &y, const int &n, const bool &VERBOSE) : maleNames(maleNames), femaleNames(femaleNames), infectedNames(infectedNames), VERBOSE(VERBOSE)
 {
     static bool seeded = false; // seed the random number generator
     if (!seeded)
@@ -41,7 +41,7 @@ void BunnyManager::increment()
             grid[(*it)->getPosition().first][(*it)->getPosition().second].reset(); // reset the weak ptr
             (*it)->setPosition(newPos);
             grid[newPos.first][newPos.second] = *it; // assign weak ptr to observe this shared ptr
-            if (verbose)
+            if (VERBOSE)
                 std::cout << ColourUtility::getColourString((*it)->getColour()) << " " << ((*it)->getSex() ? "Female " : "Male ") << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
             if (!(*it)->isInfected() && ((*it)->getSex() && (*it)->getAge() > 1))
             {
@@ -51,7 +51,7 @@ void BunnyManager::increment()
                 infected.push_back(*it);
         }
     }
-    if (verbose)
+    if (VERBOSE)
     {
         std::cout << std::endl;
         sleep(1);
@@ -65,7 +65,7 @@ void BunnyManager::increment()
         born++;
         addBunny(it2.get());
     }
-    if (verbose)
+    if (VERBOSE)
     {
         std::cout << std::endl;
         sleep(2);
@@ -142,7 +142,7 @@ void BunnyManager::addBunny(const Bunny *mother)
             name = maleNames[random];
         }
     }
-    if (verbose)
+    if (VERBOSE)
         std::cout << ColourUtility::getColourString(colour) << " " << (sex ? "Female" : "Male") << " "
                   << ((infected) ? "Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
     std::shared_ptr<Bunny> shardPtr = std::make_shared<Bunny>(sex, colour, name, 0, infected, pos);
@@ -171,7 +171,7 @@ void BunnyManager::run()
     {
         system("cls");
         increment();
-        if (verbose)
+        if (VERBOSE)
         {
             std::cout << std::endl;
             std::cout << "--------------------------" << std::endl;
@@ -179,7 +179,7 @@ void BunnyManager::run()
             printState();
             std::cout << "--------------------------" << std::endl;
         }
-        if (bunnies.size() >= 1000)
+        if (POPULATION_LIMIT && bunnies.size() >= 1000)
         {
             std::cout << std::endl;
             sleep(1);
@@ -233,8 +233,13 @@ void BunnyManager::cull()
 // check if there is a old male within one cell of the provided position
 bool BunnyManager::oldMale(const std::pair<int, int> &pos)
 {
-    // return (Bunny::maleCount > 0) || std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
-    //                                              { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
+
+    if (!PROXIMITY_BREEDING)
+    {
+        return (Bunny::maleCount > 0) || std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
+                                                     { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
+    }
+
     std::vector<std::pair<int, int>> cellsToCheck = util::validCells(pos, grid.size(), grid[0].size());
     std::shared_ptr<Bunny> sharedPtr;
     for (const auto &it : cellsToCheck)

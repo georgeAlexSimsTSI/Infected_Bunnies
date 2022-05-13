@@ -26,7 +26,7 @@ private:
     // grid
     std::vector<std::vector<std::weak_ptr<Bunny>>> grid; // Weak pointers are used so that if I delete a bunny from the list I dont have to remove them from the grid
 
-    bool verbose = false;
+    const bool VERBOSE = false, PROXIMITY_BREEDING = false, POPULATION_LIMIT = false;
 
     // Method to pass time
     void increment();
@@ -47,7 +47,7 @@ private:
 
 public:
     BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Patient Zero"}, 20, 20, 5, false){};
-    BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &x, const int &y, const int &n, const bool &verbose);
+    BunnyManager(const std::vector<std::string> &maleNames, const std::vector<std::string> &femaleNames, const std::vector<std::string> &infectedNames, const int &x, const int &y, const int &n, const bool &VERBOSE);
 
     void run(); // Main logic loop that increments all bunnies until there are no healthy bunnies
 };

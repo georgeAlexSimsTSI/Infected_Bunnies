@@ -36,14 +36,14 @@ int main()
 
     // female names are from https://www.verywellfamily.com/top-1000-baby-girl-names-2757832
     std::vector<std::string> femaleBunnyNames;
-    loadData(femaleBunnyNames,"../femaleNames.txt");
-    if(femaleBunnyNames.size() == 0)
+    loadData(femaleBunnyNames, "../femaleNames.txt");
+    if (femaleBunnyNames.size() == 0)
         femaleBunnyNames = {"Olivia", "Emma", "Charlotte", "Amelia", "Ava"};
-        
+
     std::vector<std::string> infectedBunnyNames{"Patient Zero"};
 
-    int gridHeight = 80, gridWidth = 80, startingNumber = 500; // would recommend a smaller grid size as it is easier to read
-    bool verbose = false;
-    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, gridHeight, gridWidth, startingNumber, verbose); // numbers are x , y and starting number
+    int gridHeight = 80, gridWidth = 80, startingNumber = 100; // would recommend a smaller grid size as it is easier to read
+    bool VERBOSE = false;
+    BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, gridHeight, gridWidth, startingNumber, VERBOSE); // numbers are x , y and starting number
     manager.run();
 }
