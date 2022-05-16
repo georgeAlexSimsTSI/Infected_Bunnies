@@ -3,16 +3,8 @@
 
 #include <string>
 #include <iostream>
-#include "util.h"
-
-/**
- * @brief utility enum for bunny gender
- */
-enum Gender
-{
-    Male,
-    Female
-};
+#include "colour.h"
+#include "gender.h"
 
 /**
  * @brief class responsible for representing bunnies
@@ -28,11 +20,6 @@ private:
     std::pair<int, int> position;
 
 public:
-    // These are variables used for counting, when the manager progresses the year these will be set back to zero and then increment
-    static unsigned int infectedCount;
-    static unsigned int maleCount;
-    static unsigned int femaleCount;
-
     Bunny() : Bunny(Gender::Male, Colour::White, std::string("Thumper"), 0, false){};
     Bunny(const Gender &sex, const Colour &colour, const std::string &name, const unsigned int &age, const bool &infected) : Bunny(sex, colour, name, age, infected, std::make_pair(0, 0)){};
     Bunny(const Gender &sex, const Colour &colour, const std::string &name, const unsigned int &age, const bool &infected, const std::pair<int, int> &position) : sex(sex), colour(colour), name(name), age(age), infected(infected), position(position){};

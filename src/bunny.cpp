@@ -1,9 +1,5 @@
 #include "../include/bunny.h"
 
-unsigned int Bunny::infectedCount;
-unsigned int Bunny::maleCount;
-unsigned int Bunny::femaleCount;
-
 Gender Bunny::getSex() const { return this->sex; }
 
 Colour Bunny::getColour() const { return this->colour; }
@@ -32,19 +28,11 @@ bool Bunny::increment()
     {
         if (age > 50)
             return true;
-        ++infectedCount;
         return false;
     }
     if (age > 10)
         return true;
 
-    if (age >= 2)
-    {
-        if (sex == 0)
-            ++maleCount;
-        else
-            ++femaleCount;
-    }
     return false;
 }
 

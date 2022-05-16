@@ -9,7 +9,7 @@ inline void loadData(std::vector<std::string> &names, const std::string &fileNam
     std::string name;
     try
     {
-        namesFile.open("../maleNames.txt");
+        namesFile.open(fileName);
         while (namesFile)
         {
             std::getline(namesFile, name);
@@ -42,7 +42,7 @@ int main()
 
     std::vector<std::string> infectedBunnyNames{"Patient Zero"};
 
-    int gridHeight = 80, gridWidth = 80, startingNumber = 100; // would recommend a smaller grid size as it is easier to read
+    int gridHeight = 20, gridWidth = 20, startingNumber = 20; // would recommend a smaller grid size as it is easier to read
     bool VERBOSE = false;
     BunnyManager manager = BunnyManager(maleBunnyNames, femaleBunnyNames, infectedBunnyNames, gridHeight, gridWidth, startingNumber, VERBOSE); // numbers are x , y and starting number
     manager.run();

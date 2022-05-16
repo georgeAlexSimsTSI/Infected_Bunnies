@@ -14,47 +14,21 @@ BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std:
     grid = std::vector(x, std::vector(y, std::weak_ptr<Bunny>()));
     for (int i = 0; i < n; ++i)
         addBunny(nullptr);
+
+    infectedCount = 0;
 }
 
 /**
  * @brief method that increments time for all rabits, carries out rabbit births and then spreads the infection
  */
-void BunnyManager::increment()
+void BunnyManager::progressTime()
 {
     // due to nature of list oldest naturally come to the front
-    std::list<std::shared_ptr<Bunny>>::iterator it = bunnies.begin();
     std::list<std::shared_ptr<Bunny>> females = std::list<std::shared_ptr<Bunny>>();
     std::list<std::shared_ptr<Bunny>> infected = std::list<std::shared_ptr<Bunny>>();
-    for (; it != bunnies.end(); ++it)
-    {
-        if ((*it)->increment())
-        {
-            std::cout << (*it)->getName() << " has died of old age " << std::endl;
-            // remove from list
-            bunnies.erase(it--); // erase then decrement
-        }
-        else
-        {
-            // move to a random direction
-            std::pair<int, int> newPos = getFreeSpace((*it)->getPosition());       // if it cant move this will return the original position
-            grid[(*it)->getPosition().first][(*it)->getPosition().second].reset(); // reset the weak ptr
-            (*it)->setPosition(newPos);
-            grid[newPos.first][newPos.second] = *it; // assign weak ptr to observe this shared ptr
-            if (VERBOSE)
-                std::cout << ColourUtility::getColourString((*it)->getColour()) << " " << ((*it)->getSex() ? "Female " : "Male ") << (*it)->getName() << " is now " << (*it)->getAge() << std::endl;
-            if (!(*it)->isInfected() && ((*it)->getSex() && (*it)->getAge() > 1))
-            {
-                females.push_back(*it);
-            }
-            if ((*it)->isInfected())
-                infected.push_back(*it);
-        }
-    }
-    if (VERBOSE)
-    {
-        std::cout << std::endl;
-        sleep(1);
-    }
+
+    // age rabbits
+    ageBunnies(females, infected);
 
     // breed the rabbits
     int born = 0;
@@ -64,23 +38,70 @@ void BunnyManager::increment()
     int newInfections = 0;
     spreadInfection(infected, newInfections);
 
-    Bunny::infectedCount = infected.size(); // used to increment this while iterating
+    infectedCount = infected.size(); // used to increment this while iterating
     std::cout << std::endl
               << "Born: " << born << " Turned: " << newInfections << std::endl;
-    std::cout << "Currently: " << bunnies.size() - Bunny::infectedCount << " healthy rabbits " << std::endl;
-    std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
+    std::cout << "Currently: " << bunnies.size() - infectedCount << " healthy rabbits " << std::endl;
+    std::cout << "Currently: " << infectedCount << " infected " << std::endl;
 }
 
+void BunnyManager::ageBunnies(std::list<std::shared_ptr<Bunny>> &femaleBunnies, std::list<std::shared_ptr<Bunny>> &infectedBunnies)
+{
+    auto it = bunnies.begin();
+    for (; it != bunnies.end(); ++it)
+    {
+        if ((*it)->increment())
+        {
+            std::cout << (*it)->getName() << " has died of old age " << std::endl;
+            // remove from list
+            bunnies.erase(it--);
+        }
+        else
+        {
+            // move to a random direction
+            std::shared_ptr<Bunny> sharedPtr = *it;
+            std::pair<int, int> newPos = getFreeSpace(sharedPtr->getPosition());           // if it cant move this will return the original position
+            grid[sharedPtr->getPosition().first][sharedPtr->getPosition().second].reset(); // reset the weak ptr
+            sharedPtr->setPosition(newPos);
+            grid[newPos.first][newPos.second] = sharedPtr; // assign weak ptr to observe this shared ptr
+            if (VERBOSE)
+                std::cout << ColourUtility::getColourString(sharedPtr->getColour()) << " " << (sharedPtr->getSex() ? "Female " : "Male ") << sharedPtr->getName() << " is now " << sharedPtr->getAge() << std::endl;
+            if (!sharedPtr->isInfected() && (sharedPtr->getSex() && sharedPtr->getAge() > 1))
+            {
+                femaleBunnies.push_back(sharedPtr);
+            }
+            if (sharedPtr->isInfected())
+                infectedBunnies.push_back(sharedPtr);
+        }
+    }
+    if (VERBOSE)
+    {
+        std::cout << std::endl;
+        sleep(1);
+    }
+}
+
+/**
+ * @brief
+ *
+ * @param females
+ * @param born
+ */
 void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born)
 {
+    bool oldMale = std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
+                               { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
+
     // iterate through list of females
-    for (auto it2 : females)
+    for (auto it : females)
     {
         // check if there is an eligible male within one tile of the female
-        if (!oldMale(it2->getPosition()))
+        if (PROXIMITY_BREEDING && !proximityFertileMale(it->getPosition()) || !PROXIMITY_BREEDING && !oldMale)
             continue;
-        born++;
-        addBunny(it2.get());
+
+        auto child = addBunny(it.get());
+        if (child != nullptr)
+            ++born;
     }
     if (VERBOSE)
     {
@@ -89,12 +110,18 @@ void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females
     }
 }
 
+/**
+ * @brief Spread the infection from infected bunnies to close healthy bunnies
+ *
+ * @param infected list of those already infected
+ * @param newInfections number of new infected
+ */
 void BunnyManager::spreadInfection(const std::list<std::shared_ptr<Bunny>> &infected, int &newInfections)
 {
-    for (auto it2 = infected.begin(); it2 != infected.end(); ++it2)
+    for (auto &it : infected)
     {
         // check the surrounding cells for uninfected rabbits
-        std::vector<std::pair<int, int>> cells = util::validCells((*it2)->getPosition(), grid.size(), grid[0].size());
+        std::vector<std::pair<int, int>> cells = util::validCells(it->getPosition(), grid.size(), grid[0].size());
         std::shared_ptr<Bunny> sharedPtr;
         for (int i = 0; i < cells.size(); ++i)
         {
@@ -119,7 +146,7 @@ void BunnyManager::spreadInfection(const std::list<std::shared_ptr<Bunny>> &infe
  *
  * @param mother a pointer to the mother object this is used to determine position and colour, if null these are random
  */
-void BunnyManager::addBunny(const Bunny *mother)
+std::shared_ptr<Bunny> BunnyManager::addBunny(const Bunny *mother)
 {
     int random = std::rand() % 100;
     Gender sex = (random % 2 == 0) ? Gender::Male : Gender::Female;
@@ -129,11 +156,11 @@ void BunnyManager::addBunny(const Bunny *mother)
     // potential issue with adding bunnies without a mother
     // it will select a random cell and then overwrite anything that is in it
     if (mother != nullptr && (pos.first == mother->getPosition().first || pos.second == mother->getPosition().second)) // no free valid spaces
-        return;                                                                                                        // dont add the child
+        return nullptr;                                                                                                // dont add the child
 
     if (!grid[pos.first][pos.second].expired())
     {
-        return;
+        return nullptr;
     }
 
     bool infected = (random <= 2);
@@ -142,7 +169,7 @@ void BunnyManager::addBunny(const Bunny *mother)
     {
         random = std::rand() % infectedNames.size();
         name = infectedNames[random];
-        Bunny::infectedCount++;
+        infectedCount++;
     }
     else
     {
@@ -160,9 +187,10 @@ void BunnyManager::addBunny(const Bunny *mother)
     if (VERBOSE)
         std::cout << ColourUtility::getColourString(colour) << " " << (sex ? "Female" : "Male") << " "
                   << ((infected) ? "Infected Bunny" : "Bunny") << " " << name << " was born!" << std::endl;
-    std::shared_ptr<Bunny> shardPtr = std::make_shared<Bunny>(sex, colour, name, 0, infected, pos);
-    bunnies.emplace_back(shardPtr);
-    grid[pos.first][pos.second] = shardPtr;
+    std::shared_ptr<Bunny> sharedPtr = std::make_shared<Bunny>(sex, colour, name, 0, infected, pos);
+    bunnies.emplace_back(sharedPtr);
+    grid[pos.first][pos.second] = sharedPtr;
+    return sharedPtr;
 }
 
 /**
@@ -170,9 +198,9 @@ void BunnyManager::addBunny(const Bunny *mother)
  */
 void BunnyManager::printState() const
 {
-    int healthy = (bunnies.size() - Bunny::infectedCount > 0) ? bunnies.size() - Bunny::infectedCount : 0;
+    int healthy = (bunnies.size() - infectedCount > 0) ? bunnies.size() - infectedCount : 0;
     std::cout << "Healthy bunnies: " << healthy << std::endl;
-    std::cout << "Infected bunnies: " << Bunny::infectedCount << std::endl;
+    std::cout << "Infected bunnies: " << infectedCount << std::endl;
 }
 
 /**
@@ -185,7 +213,7 @@ void BunnyManager::run()
     do
     {
         system("cls");
-        increment();
+        progressTime();
         if (VERBOSE)
         {
             std::cout << std::endl;
@@ -215,8 +243,8 @@ void BunnyManager::run()
         }
         sleep(3);
         std::cout.flush();
-        healthy = bunnies.size() - Bunny::infectedCount; // unsigned int was causing a rolling value
-    } while (healthy > 0);                               // issue when a cull occurs
+        healthy = bunnies.size() - infectedCount; // unsigned int was causing a rolling value
+    } while (healthy > 0);                        // issue when a cull occurs
     displayGrid();
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
@@ -237,7 +265,7 @@ void BunnyManager::cull()
         std::advance(it, rand);
         // std::cout << (*it)->getName() << " has been culled " << std::endl;
         if ((*it)->isInfected())
-            --Bunny::infectedCount;
+            --infectedCount;
 
         bunnies.erase(it);
     }
@@ -246,15 +274,8 @@ void BunnyManager::cull()
 }
 
 // check if there is a old male within one cell of the provided position
-bool BunnyManager::oldMale(const std::pair<int, int> &pos)
+bool BunnyManager::proximityFertileMale(const std::pair<int, int> &pos)
 {
-
-    if (!PROXIMITY_BREEDING)
-    {
-        return (Bunny::maleCount > 0) || std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
-                                                     { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
-    }
-
     std::vector<std::pair<int, int>> cellsToCheck = util::validCells(pos, grid.size(), grid[0].size());
     std::shared_ptr<Bunny> sharedPtr;
     for (const auto &it : cellsToCheck)
