@@ -44,6 +44,10 @@ private:
     void displayGrid() const;
     // utility method for the display grid
     static char getBunnyChar(const std::weak_ptr<Bunny> &bunny);
+    // function to breed bunnies
+    void breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born);
+    // function to spread the infection
+    void spreadInfection(const std::list<std::shared_ptr<Bunny>> &infected, int &newInfections);
 
 public:
     BunnyManager() : BunnyManager({"Peter", "Thumper"}, {"Daisy", "Martha"}, {"Patient Zero"}, 20, 20, 5, false){};

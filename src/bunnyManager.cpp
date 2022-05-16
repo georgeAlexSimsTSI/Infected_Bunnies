@@ -21,7 +21,6 @@ BunnyManager::BunnyManager(const std::vector<std::string> &maleNames, const std:
  */
 void BunnyManager::increment()
 {
-    int born = 0;
     // due to nature of list oldest naturally come to the front
     std::list<std::shared_ptr<Bunny>>::iterator it = bunnies.begin();
     std::list<std::shared_ptr<Bunny>> females = std::list<std::shared_ptr<Bunny>>();
@@ -56,6 +55,24 @@ void BunnyManager::increment()
         std::cout << std::endl;
         sleep(1);
     }
+
+    // breed the rabbits
+    int born = 0;
+    breedBunnies(females, born);
+
+    // spread the infection
+    int newInfections = 0;
+    spreadInfection(infected, newInfections);
+
+    Bunny::infectedCount = infected.size(); // used to increment this while iterating
+    std::cout << std::endl
+              << "Born: " << born << " Turned: " << newInfections << std::endl;
+    std::cout << "Currently: " << bunnies.size() - Bunny::infectedCount << " healthy rabbits " << std::endl;
+    std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
+}
+
+void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born)
+{
     // iterate through list of females
     for (auto it2 : females)
     {
@@ -70,7 +87,10 @@ void BunnyManager::increment()
         std::cout << std::endl;
         sleep(2);
     }
-    int newInfections = 0;
+}
+
+void BunnyManager::spreadInfection(const std::list<std::shared_ptr<Bunny>> &infected, int &newInfections)
+{
     for (auto it2 = infected.begin(); it2 != infected.end(); ++it2)
     {
         // check the surrounding cells for uninfected rabbits
@@ -92,11 +112,6 @@ void BunnyManager::increment()
         sharedPtr->turnInfected();
         ++newInfections;
     }
-    Bunny::infectedCount = infected.size(); // used to increment this while iterating
-    std::cout << std::endl
-              << "Born: " << born << " Turned: " << newInfections << std::endl;
-    std::cout << "Currently: " << bunnies.size() - Bunny::infectedCount << " healthy rabbits " << std::endl;
-    std::cout << "Currently: " << Bunny::infectedCount << " infected " << std::endl;
 }
 
 /**
