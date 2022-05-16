@@ -50,28 +50,28 @@ void BunnyManager::ageBunnies(std::list<std::shared_ptr<Bunny>> &femaleBunnies, 
     auto it = bunnies.begin();
     for (; it != bunnies.end(); ++it)
     {
-        if ((*it)->increment())
+        std::shared_ptr<Bunny> bunny = *it;
+        if (bunny->increaseAge())
         {
-            std::cout << (*it)->getName() << " has died of old age " << std::endl;
+            std::cout << bunny->getName() << " has died of old age " << std::endl;
             // remove from list
             bunnies.erase(it--);
         }
         else
         {
             // move to a random direction
-            std::shared_ptr<Bunny> sharedPtr = *it;
-            std::pair<int, int> newPos = getFreeSpace(sharedPtr->getPosition());           // if it cant move this will return the original position
-            grid[sharedPtr->getPosition().first][sharedPtr->getPosition().second].reset(); // reset the weak ptr
-            sharedPtr->setPosition(newPos);
-            grid[newPos.first][newPos.second] = sharedPtr; // assign weak ptr to observe this shared ptr
+            std::pair<int, int> newPos = getFreeSpace(bunny->getPosition());       // if it cant move this will return the original position
+            grid[bunny->getPosition().first][bunny->getPosition().second].reset(); // reset the weak ptr
+            bunny->setPosition(newPos);
+            grid[newPos.first][newPos.second] = bunny; // assign weak ptr to observe this shared ptr
             if (VERBOSE)
-                std::cout << ColourUtility::getColourString(sharedPtr->getColour()) << " " << (sharedPtr->getSex() ? "Female " : "Male ") << sharedPtr->getName() << " is now " << sharedPtr->getAge() << std::endl;
-            if (!sharedPtr->isInfected() && (sharedPtr->getSex() && sharedPtr->getAge() > 1))
+                std::cout << ColourUtility::getColourString(bunny->getColour()) << " " << (bunny->getSex() ? "Female " : "Male ") << bunny->getName() << " is now " << bunny->getAge() << std::endl;
+            if (!bunny->isInfected() && (bunny->getSex() && bunny->getAge() > 1))
             {
-                femaleBunnies.push_back(sharedPtr);
+                femaleBunnies.push_back(bunny);
             }
-            if (sharedPtr->isInfected())
-                infectedBunnies.push_back(sharedPtr);
+            if (bunny->isInfected())
+                infectedBunnies.push_back(bunny);
         }
     }
     if (VERBOSE)
@@ -155,7 +155,7 @@ std::shared_ptr<Bunny> BunnyManager::addBunny(const Bunny *mother)
 
     // potential issue with adding bunnies without a mother
     // it will select a random cell and then overwrite anything that is in it
-    if (mother != nullptr && (pos.first == mother->getPosition().first || pos.second == mother->getPosition().second)) // no free valid spaces
+    if (mother != nullptr && (pos.first == mother->getPosition().first && pos.second == mother->getPosition().second)) // no free valid spaces
         return nullptr;                                                                                                // dont add the child
 
     if (!grid[pos.first][pos.second].expired())
@@ -299,8 +299,7 @@ std::pair<int, int> BunnyManager::getFreeSpace(const std::pair<int, int> &pos)
     {
         if (grid[it->first][it->second].expired()) // space is free
             continue;
-        possibleMoves.erase(it);
-        it--; // need to decrement iterator after erasing
+        possibleMoves.erase(it--);
     }
     if (possibleMoves.size() == 0)
         return pos; // if no free cells return the starting cell

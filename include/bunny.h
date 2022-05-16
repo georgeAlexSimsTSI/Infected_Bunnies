@@ -33,7 +33,7 @@ public:
     bool isInfected() const;
 
     void turnInfected();
-    bool increment(); // if the bunny dies of old age it will return true
+    bool increaseAge(); // if the bunny dies of old age it will return true
     void setPosition(const std::pair<int, int> &pos);
 };
 
