@@ -33,7 +33,7 @@ void BunnyManager::progressTime()
     // breed the rabbits
     int born = 0;
     bool oldMale = std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
-                               { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
+                               { return (*it).getAge() >= 2 && (*it).getSex() == 0 && !(*it).isInfected(); });
     breedBunnies(females, born, oldMale);
 
     // spread the infection
