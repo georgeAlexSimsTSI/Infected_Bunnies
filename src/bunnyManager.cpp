@@ -38,7 +38,7 @@ void BunnyManager::progressTime()
     int newInfections = 0;
     spreadInfection(infected, newInfections);
 
-    infectedCount = infected.size(); // used to increment this while iterating
+    infectedCount = infected.size() + newInfections; // used to increment this while iterating
     std::cout << std::endl
               << "Born: " << born << " Turned: " << newInfections << std::endl;
     std::cout << "Currently: " << bunnies.size() - infectedCount << " healthy rabbits " << std::endl;
