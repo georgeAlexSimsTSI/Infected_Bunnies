@@ -210,8 +210,8 @@ void BunnyManager::printState() const
  */
 void BunnyManager::run()
 {
-    int healthy;
-    do
+    int healthy = bunnies.size();
+    while (healthy > 0)
     {
         system("cls");
         progressTime();
@@ -245,7 +245,7 @@ void BunnyManager::run()
         sleep(3);
         std::cout.flush();
         healthy = bunnies.size() - infectedCount; // unsigned int was causing a rolling value
-    } while (healthy > 0);                        // issue when a cull occurs
+    }
     displayGrid();
     std::cout << std::endl
               << "There are no living bunnies " << std::endl;
