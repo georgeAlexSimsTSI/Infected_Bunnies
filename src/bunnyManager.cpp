@@ -32,7 +32,9 @@ void BunnyManager::progressTime()
 
     // breed the rabbits
     int born = 0;
-    breedBunnies(females, born);
+    bool oldMale = std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
+                               { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
+    breedBunnies(females, born, oldMale);
 
     // spread the infection
     int newInfections = 0;
@@ -88,11 +90,8 @@ void BunnyManager::ageBunnies(std::list<std::shared_ptr<Bunny>> &femaleBunnies, 
  * @param females
  * @param born
  */
-void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born)
+void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born, const bool &oldMale)
 {
-    bool oldMale = std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
-                               { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
-
     // iterate through list of females
     for (auto &it : females)
     {
