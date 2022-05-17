@@ -94,7 +94,7 @@ void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females
                                { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
 
     // iterate through list of females
-    for (auto it : females)
+    for (auto &it : females)
     {
         // check if there is an eligible male within one tile of the female
         if (PROXIMITY_BREEDING && !proximityFertileMale(it->getPosition()) || !PROXIMITY_BREEDING && !oldMale)
