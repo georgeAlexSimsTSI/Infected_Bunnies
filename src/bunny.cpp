@@ -16,14 +16,14 @@ void Bunny::turnInfected() { this->infected = true; }
 
 /**
  * @brief increment the bunny age
- *
- * @return true if the rabbit dies of old age
- * @return false if the rabbit is still alive
  */
-bool Bunny::increaseAge()
+void Bunny::increaseAge()
 {
-    // decided to have their age increment first
     ++age;
+}
+
+bool Bunny::isDead()
+{
     if (infected)
     {
         if (age > 50)

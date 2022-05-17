@@ -51,7 +51,8 @@ void BunnyManager::ageBunnies(std::list<std::shared_ptr<Bunny>> &femaleBunnies, 
     for (; it != bunnies.end(); ++it)
     {
         std::shared_ptr<Bunny> bunny = *it;
-        if (bunny->increaseAge())
+        bunny->increaseAge();
+        if (bunny->isDead())
         {
             std::cout << bunny->getName() << " has died of old age " << std::endl;
             // remove from list
