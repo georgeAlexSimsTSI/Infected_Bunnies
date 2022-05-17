@@ -32,13 +32,15 @@ void BunnyManager::progressTime()
 
     // breed the rabbits
     int born = 0;
-    breedBunnies(females, born);
+    bool oldMale = std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
+                               { return (*it).getAge() >= 2 && (*it).getSex() == 0 && !(*it).isInfected(); });
+    breedBunnies(females, born, oldMale);
 
     // spread the infection
     int newInfections = 0;
     spreadInfection(infected, newInfections);
 
-    infectedCount = infected.size(); // used to increment this while iterating
+    infectedCount = infected.size() + newInfections; // used to increment this while iterating
     std::cout << std::endl
               << "Born: " << born << " Turned: " << newInfections << std::endl;
     std::cout << "Currently: " << bunnies.size() - infectedCount << " healthy rabbits " << std::endl;
@@ -88,13 +90,10 @@ void BunnyManager::ageBunnies(std::list<std::shared_ptr<Bunny>> &femaleBunnies, 
  * @param females
  * @param born
  */
-void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born)
+void BunnyManager::breedBunnies(const std::list<std::shared_ptr<Bunny>> &females, int &born, const bool &oldMale)
 {
-    bool oldMale = std::any_of(bunnies.begin(), bunnies.end(), [](const std::shared_ptr<Bunny> &it)
-                               { return (*it).getAge() >= 2 && (*it).getSex() == 0; });
-
     // iterate through list of females
-    for (auto it : females)
+    for (auto &it : females)
     {
         // check if there is an eligible male within one tile of the female
         if (PROXIMITY_BREEDING && !proximityFertileMale(it->getPosition()) || !PROXIMITY_BREEDING && !oldMale)
